@@ -1,5 +1,5 @@
 import {
-    SymSimOne,
+    SymRenderer,
     GinzburgLandauSimulationCreator,
     Group_KLM,
 }
@@ -11,7 +11,7 @@ import {
 from './ginzburg_landau_samples_klm.js';
 
 try {
-    let ss = SymSimOne({
+    let ss = SymRenderer({
         simCreator: GinzburgLandauSimulationCreator,
         samples: ginzburg_landau_samples_klm,
         groupMaker:  new Group_KLM(), // maker of the groups

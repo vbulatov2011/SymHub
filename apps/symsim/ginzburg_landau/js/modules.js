@@ -35,7 +35,7 @@ export {
     getBlitMaker,
     getTime,
     PlaneNavigator,
-    SymSimOne,
+    SymRenderer,
 }
 from '../../../../lib/symhublib/symhublib.js';
 
