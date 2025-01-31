@@ -1,5 +1,5 @@
 
-const FOLDER = 'presets/gray-scott/wp/';
+const FOLDER = 'presets/wp/';
 
 function smp(name){
     

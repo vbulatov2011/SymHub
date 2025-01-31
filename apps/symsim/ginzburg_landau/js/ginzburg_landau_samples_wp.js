@@ -1,5 +1,5 @@
 
-const FOLDER = 'presets/ginzburg-landau/wp/';
+const FOLDER = 'presets/wp/';
 
 function smp(name){
     

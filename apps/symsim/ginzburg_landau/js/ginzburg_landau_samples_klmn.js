@@ -1,5 +1,5 @@
 
-const FOLDER = 'presets/ginzburg-landau/klmn/';
+const FOLDER = 'presets/klmn/';
 
 function smp(name){
     

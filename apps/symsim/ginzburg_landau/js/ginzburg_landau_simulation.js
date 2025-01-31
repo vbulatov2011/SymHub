@@ -1,6 +1,5 @@
 import {
   isDefined, 
-  gs_uniformUV,
   initFragments, 
   buildProgramsCached,
   GroupUtils,
@@ -27,7 +26,7 @@ import {
   fa2stra,
   str2fa,
   
-  GrayScottFragments as GS, 
+  //GrayScottFragments as GS, 
   GinzburgLandauFragments as GLF, 
   ShaderFragments as SF 
   
@@ -54,13 +53,6 @@ const fragGL_render_inc = {obj:GLF,id:'render_inc'};
 const fragGL_render_fp =  {obj:GLF, id:'render_fp'};
 const fragGL_hist_vp = {obj:GLF,id:'hist_vp'};
 const fragGL_hist_fp = {obj:GLF,id:'hist_fp'};
-
-
-const fragGsSimulation     = {obj:GS,id:'grayScottShader'};
-const fragGsScreen         = {obj:GS,id:'screenShader'};
-const fragGsImage2         = {obj:GS,id:'gsImage2Shader'};      
-const fragGsNoise1         = {obj:GS,id:'gsNoise1Shader'};
-const fragGsBrush          = {obj:GS,id:'gsBrushShader'};
 
 const fragBaseVertex       = {obj:SF,id:'canvasVertexShader'};
 const fragColormap         = {obj:SF,id:'colormap'};
@@ -90,11 +82,6 @@ const gsFragments = [
     fragGL_hist_fp,
     fragGL_render_fp,
 
-    fragGsSimulation,
-    fragGsScreen,
-    fragGsImage2,
-    fragGsNoise1,
-    fragGsBrush,
     fragBaseVertex,
     fragColormap,
     fragBufferVisualization,
@@ -124,36 +111,8 @@ const progGL_step = {name: 'GL_step', vs: baseVertexShader,
     fs: {frags:[fragGL_step]}
 };
 
-const progGsScreen = {name: 'GsScreen', vs: baseVertexShader, 
-    fs: {frags:[fragComplex,fragGsScreen]}
-};
-
-const progGsImage2 = {name: 'GsImage2', vs:baseVertexShader, 
-    fs: {frags:[fragGsImage2]}
-};
-
-const progGsBrush =  {name: 'GsBrush', vs:baseVertexShader, 
-    fs: {frags:[fragGsBrush]}
-};
-
-const progGsSimulation =  {name: 'GsSimulation', vs:baseVertexShader, 
-    fs: {frags:[fragSdf2d, fragGsSimulation]}
-}; 
-
-const progGsNoise1 =  {name: 'GsNoise1', vs:baseVertexShader, 
-    fs: {frags:[fragSimplexNoise,fragGsNoise1]}
-};
-
-const progDrawFdSampler =  { name: 'DrawFDSampler', vs:baseVertexShader, 
-    fs: {frags:[fragIsplane,fragInversiveSampler, fragDrawFdSampler]}
-};
-
 const progSymSampler = { name: 'SymSampler', vs:baseVertexShader, 
     fs: {frags: [fragIsplane, fragInversiveSampler, fragSymSampler]},
- };
-
-const progBufferVisualization = { name: 'bufferVisualization', vs:baseVertexShader, 
-    fs: {frags: [fragColormap, fragBufferVisualization]},
  };
 
 const progSymNoise =  { name: 'SymNoise', vs: baseVertexShader,
@@ -164,12 +123,6 @@ const progSymNoise =  { name: 'SymNoise', vs: baseVertexShader,
 const gsPrograms = [
     progGL_reset,
     progGL_step,
-    progGsScreen,
-    progGsImage2,
-    progBufferVisualization,
-    progGsSimulation,
-    progGsNoise1,  
-    progDrawFdSampler,
     progSymSampler,
     progSymNoise,
 ];
@@ -824,98 +777,6 @@ function GinzburgLandauSimulation(){
     
   }
     
-  //
-  //
-  //
-  function onNoise1(){
-    
-    if(DEBUG)console.log(`${MY_NAME}.onNoise1()`);
-    
-    let gl = glCtx.gl;
-    let program = progGsNoise1.program;
-    let buffer = gSimBuffer;
-    gl.viewport(0, 0, buffer.width, buffer.height);      
-    program.bind();
-    // map [-1,1] (range or rendering quad) 
-    //  into 
-    // [0,1] - range of sampler input 
-    let ctUni = { uAspect: (buffer.height/buffer.width), uScale: 1, uCenter: [0.,0.] };
-    program.setUniforms(ctUni);
-    
-    let noiseCfg = mConfig.simpleNoise;
-    
-    let cUni = {
-      NoiseCell: noiseCfg.noiseCell,
-      NoiseFactor: noiseCfg.noiseFactor,
-      NoiseCenter: [noiseCfg.noiseX,noiseCfg.noiseY],
-    };
-    
-    program.setUniforms(cUni);
-    gBlitMaker.blit(gSimBuffer.write);             
-    gSimBuffer.swap();
-    //gBlitMaker.blit(gSimBuffer.write); 
-    
-    scheduleRepaint();
-          
-  }
-
-  //
-  //  makes symmetrical noise 
-  //
-  function onSymNoise(){
-    
-    let group = gGroup;
-    if(DEBUG)console.log(`${MY_NAME}.onSymNoise() group:`, group);
-    let noiseCfg = mConfig.noise;    
-    let gens = group.getReverseITransforms();
-    if(DEBUG)console.log(`${MY_NAME}.gens:`, gens);
-    let trans = GroupUtils.makeTransforms(gens, {maxWordLength: noiseCfg.noiseCrownWordCount});
-    //console.log('trans.length:', trans.length);    
-    //console.log('trans:', trans);
-
-    
-    let gl = glCtx.gl;
-    let program = progSymNoise.program;
-    
-    let buffer = gSimBuffer;
-    gl.viewport(0, 0, buffer.width, buffer.height);      
-     program.bind();
-    // map [-1,1] range or rendering quad into [0,1] range of sampler input 
-    let ctUni = { uAspect: (buffer.height/buffer.width), uScale: 1, uCenter: [0.,0.] };
-    program.setUniforms(ctUni);
-    
-    let fd = group.getFundDomain();
-    if(DEBUG) console.log(`${MY_NAME}.fd:`, fd);    
-    let crownDataSampler = DataPacking.createGroupDataSampler(gl);    
-    DataPacking.packGroupToSampler(gl, crownDataSampler, {s: fd, t:trans});
-          
-    let uv = gs_uniformUV(mConfig.feedCoeff, mConfig.killCoeff);
-    
-    
-    let cUni = {
-      GroupData: crownDataSampler,
-      NoiseCell: noiseCfg.noiseCell,
-      NoiseFactor: noiseCfg.noiseFactor,
-      NoiseCenter: [noiseCfg.noiseX,noiseCfg.noiseY],        
-      uLineThickness: noiseCfg.lineThickness,
-      //MixWidth: mConfig.mixWidth, 
-      CapRadius: [noiseCfg.noiseCapSizeX,noiseCfg.noiseCapSizeY],
-      CapCenter: [noiseCfg.noiseCapCenterX,noiseCfg.noiseCapCenterY],        
-      uBaseColor: [uv[0],uv[1], 0, 0],
-    };
-    
-    program.setUniforms(cUni);
-
-    gl.disable(gl.BLEND);        
-
-    gBlitMaker.blit(gSimBuffer.write);             
-    gSimBuffer.swap();
-    gBlitMaker.blit(gSimBuffer.write); 
-        
-    scheduleRepaint();
-  }
-
-
     //
     //
     //

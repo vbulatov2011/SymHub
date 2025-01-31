@@ -1,5 +1,5 @@
 
-const FOLDER = 'presets/gray-scott/klm/';
+const FOLDER = 'presets/klm/';
 
 function smp(name){
     

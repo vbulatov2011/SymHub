@@ -10,13 +10,13 @@ import {
 }
 from './ginzburg_landau_samples_wp.js';
 
-try {
+//try {
     let ss = SymSimOne({
         simCreator: GinzburgLandauSimulationCreator,
         samples: ginzburg_landau_samples_wp,
         groupMaker:  new Group_WP({type: '2222',a: 0.4}), // maker of the groups
     });
     ss.run();
-} catch (err) {
-    console.error('error: ', err);
-}
+//} catch (err) {
+//    console.error('error: ', err);
+//}
