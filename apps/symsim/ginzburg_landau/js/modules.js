@@ -36,6 +36,7 @@ export {
     getTime,
     PlaneNavigator,
     SymRenderer,
+    appendThumbnails,
 }
 from '../../../../lib/symhublib/symhublib.js';
 
