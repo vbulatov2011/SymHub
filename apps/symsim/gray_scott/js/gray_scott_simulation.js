@@ -164,7 +164,7 @@ function GrayScottSimulation(){
         },
         symmetry:  {
             // parameters of symmetrization 
-            symInterval:   1,
+            symInterval:   1000,
             symIterations: 2,
             symSim: false,
             symMix: 1, 

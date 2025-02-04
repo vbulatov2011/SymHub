@@ -1,6 +1,10 @@
 import {
     appendThumbnails
-} from './appendThumbnails.js'
+} from './modules.js'
+
+const APP_PAGE = 'symsim_gray_scott_wp.html';
+const PRESETS_FOLDER = 'presets/wp/';
+
 let presets = [
 "par-24-04-04-15-29-23-570",
 "par-24-04-04-15-40-49-944",
@@ -794,7 +798,7 @@ let presets = [
 
 export function init(){
      let list = document.getElementById('list');
-     let appPage = 'symsim_gray_scott_wp.html';
-     let presetsFolder = 'presets/gray-scott/wp/';
-     appendThumbnails(list, appPage, presetsFolder, presets);
+     let appPage = APP_PAGE;
+     let presetsFolder = PRESETS_FOLDER;
+     appendThumbnails(list, APP_PAGE, PRESETS_FOLDER, presets);
 }

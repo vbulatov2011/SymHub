@@ -255,7 +255,7 @@ function GinzburgLandauSimulation(){
         let plot = createDataPlot({
                           //repainter:scheduleRepaint, 
                           left:'2%', top:'2px', width:'40%', height: '40%', 
-                          bounds: GinzburgLandauPresets.getBounds(), 
+                          bounds: Presets.getBounds(), 
                           plotType: 1,
                           eventHandler:  makePresetsHandler(),
                           backgroundImagePath: 'images/gl_map_2048_trans.png',  
@@ -438,7 +438,7 @@ function GinzburgLandauSimulation(){
             ParamChoice({
                 obj: cfg,
                 key: 'preset',
-                choice: GinzburgLandauPresets.names,
+                choice: Presets.names,
                 name: 'preset',
                 onChange: onPresetChanged
             }),

@@ -1,6 +1,6 @@
 import {
     appendThumbnails
-} from './appendThumbnails.js'
+} from './modules.js'
 let presets = [
 "par-24-08-28-13-20-42-027",
 "par-24-08-28-13-32-25-906",
@@ -166,6 +166,6 @@ let presets = [
 export function init(){
      let list = document.getElementById('list');
      let appPage = 'symsim_gray_scott_klmn.html';
-     let presetsFolder = 'presets/gray-scott/klmn/';
+     let presetsFolder = 'presets/klmn/';
      appendThumbnails(list, appPage, presetsFolder, presets);
 }
